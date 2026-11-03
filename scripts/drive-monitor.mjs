@@ -8,17 +8,17 @@ const required = ['GOOGLE_SERVICE_ACCOUNT_JSON', 'DRIVE_ROOT_FOLDER_ID'];
 const missing = required.filter((name) => !process.env[name]?.trim());
 
 function md(value) {
-  return String(value ?? '').replaceAll('|', '\\|').replace(/[\r\n]+/g, ' ').trim();
+  return String(value ?? '').replaceAll('|', '\\|').replace(/[\\r\\n]+/g, ' ').trim();
 }
 
 async function summarize(markdown) {
-  if (summaryPath) await fs.appendFile(summaryPath, `${markdown}\n`, 'utf8');
-  console.log(markdown.replace(/\n/g, ' | '));
+  if (summaryPath) await fs.appendFile(summaryPath, `${markdown}\\n`, 'utf8');
+  console.log(markdown.replace(/\\n/g, ' | '));
 }
 
 if (missing.length) {
-  await summarize(`## فحص أرشيف Drive\nلم يبدأ الفحص؛ أضف أسرار GitHub التالية لتفعيله: ${missing.map((x) => `\`${x}\``).join('، ')}. لم يُجر أي اتصال بـDrive.`);
-  process.exit(0);
+  await summarize(`## فحص أرشيف Drive\\nلم يبدأ الفحص؛ أضف أسرار GitHub التالية لتفعيله: ${missing.map((x) => `\\`${x}\\``).join('، ')}. لم يُجر أي اتصال بـDrive.`);
+  process.exit(1);
 }
 
 async function fetchJson(url, options = {}, attempts = 5) {
@@ -148,15 +148,15 @@ if (hadBaseline) {
   for (const [key, file] of Object.entries(previous)) if (!current.has(key)) removed.push(file);
 }
 
-await fs.writeFile(statePath, `${JSON.stringify({ schemaVersion: 1, files: Object.fromEntries([...current.entries()].sort(([a], [b]) => a.localeCompare(b))) }, null, 2)}\n`, 'utf8');
+await fs.writeFile(statePath, `${JSON.stringify({ schemaVersion: 1, files: Object.fromEntries([...current.entries()].sort(([a], [b]) => a.localeCompare(b))) }, null, 2)}\\n`, 'utf8');
 
 const date = new Date().toISOString();
 if (!hadBaseline) {
-  await summarize(`## فحص أرشيف Drive\nأنشئت نقطة أساس بتاريخ ${date} تضم ${current.size} ملف PDF. لم تُنزّل الملفات ولم تُعالج ولم تُنشر.`);
+  await summarize(`## فحص أرشيف Drive\\nأنشئت نقطة أساس بتاريخ ${date} تضم ${current.size} ملف PDF. لم تُنزّل الملفات ولم تُعالج ولم تُنشر.`);
 } else {
   const rows = [...added.map((f) => ['جديد', f]), ...changed.map((f) => ['معدّل', f]), ...removed.map((f) => ['أزيل من Drive', f])];
   const table = rows.length
-    ? `\n| الحالة | المجلد | الملف | آخر تعديل | الحجم |\n|---|---|---|---|---:|\n${rows.slice(0, 200).map(([status, file]) => `| ${status} | ${md(file.folder || 'الجذر')} | ${md(file.name)} | ${md(file.modifiedTime)} | ${md(file.size)} |`).join('\n')}${rows.length > 200 ? `\n\nعُرض أول 200 من ${rows.length} تغييراً.` : ''}`
-    : '\nلا توجد ملفات جديدة أو معدّلة أو محذوفة منذ الفحص السابق.';
-  await summarize(`## فحص أرشيف Drive — ${date}\n- ملفات PDF الحالية: ${current.size}\n- جديدة: ${added.length}؛ معدّلة: ${changed.length}؛ أزيلت: ${removed.length}\n- هذه مرحلة رصد فقط: لا تنزيل، ولا OCR، ولا تعديل في Drive أو نشر للمكتبة.${table}`);
+    ? `\\n| الحالة | المجلد | الملف | آخر تعديل | الحجم |\\n|---|---|---|---|---:|\\n${rows.slice(0, 200).map(([status, file]) => `| ${status} | ${md(file.folder || 'الجذر')} | ${md(file.name)} | ${md(file.modifiedTime)} | ${md(file.size)} |`).join('\\n')}${rows.length > 200 ? `\\n\\nعُرض أول 200 من ${rows.length} تغييراً.` : ''}`
+    : '\\nلا توجد ملفات جديدة أو معدّلة أو محذوفة منذ الفحص السابق.';
+  await summarize(`## فحص أرشيف Drive — ${date}\\n- ملفات PDF الحالية: ${current.size}\\n- جديدة: ${added.length}؛ معدّلة: ${changed.length}؛ أزيلت: ${removed.length}\\n- هذه مرحلة رصد فقط: لا تنزيل، ولا OCR، ولا تعديل في Drive أو نشر للمكتبة.${table}`);
 }
