@@ -1,0 +1,154 @@
+{
+  "updatedAt": "2026-11-03T19:16:03.506Z",
+  "rules": [
+    "استبعاد جميع النصوص الفرعية المصنفة «قوانين المالية».",
+    "استبعاد قوانين التصفية السنوية المنفذة لقوانين المالية.",
+    "حذف السجل التالف ذي المعرف 9273.",
+    "حذف تقارير محكمة النقض للأعوام 2012 و2014 و2015 و2016 و2017 و2019."
+  ],
+  "nationalDeleted": [
+    {
+      "id": "4558",
+      "title": "قانون التصفية رقم 20.22 المتعلق بتنفيذ قانون المالية للسنة المالية 2020",
+      "reason": "annual_finance_text"
+    },
+    {
+      "id": "8494",
+      "title": "ظهير شريف بتنفيذ قانون التصفية رقم 07.25 المتعلق بتنفيذ قانون المالية للسنة المالية 2023",
+      "reason": "annual_finance_text"
+    },
+    {
+      "id": "9846",
+      "title": "ظهير شريف رقم 1.26.57 صادر في 13 من صفر 1448 (28 يوليو 2026) بتنفيذ قانون التصفية رقم 04.26 المتعلق بتنفيذ قانون المالية للسنة المالية",
+      "reason": "annual_finance_text"
+    },
+    {
+      "id": "188",
+      "title": "قانون المالية 2023",
+      "reason": "annual_finance_text"
+    },
+    {
+      "id": "3205",
+      "title": "قانون المالية 2024",
+      "reason": "annual_finance_text"
+    },
+    {
+      "id": "3300",
+      "title": "قانون المالية المعدل لسنة 2020",
+      "reason": "annual_finance_text"
+    },
+    {
+      "id": "3375",
+      "title": "قانون المالية لسنة 2022",
+      "reason": "annual_finance_text"
+    },
+    {
+      "id": "3376",
+      "title": "قانون المالية لسنة 2021",
+      "reason": "annual_finance_text"
+    },
+    {
+      "id": "3379",
+      "title": "قانون المالية لسنة 2015",
+      "reason": "annual_finance_text"
+    },
+    {
+      "id": "3381",
+      "title": "قانون المالية لسنة 2016",
+      "reason": "annual_finance_text"
+    },
+    {
+      "id": "3401",
+      "title": "قانون المالية لسنة 2010",
+      "reason": "annual_finance_text"
+    },
+    {
+      "id": "3406",
+      "title": "قانون المالية لسنة 2020",
+      "reason": "annual_finance_text"
+    },
+    {
+      "id": "6077",
+      "title": "قانون المالية لسنة 2025",
+      "reason": "annual_finance_text"
+    },
+    {
+      "id": "6912",
+      "title": "قانون المالية لسنة 1994",
+      "reason": "annual_finance_text"
+    },
+    {
+      "id": "7093",
+      "title": "قانون المالية لسنة 1988",
+      "reason": "annual_finance_text"
+    },
+    {
+      "id": "7663",
+      "title": "قانون المالية لسنة 1978",
+      "reason": "annual_finance_text"
+    },
+    {
+      "id": "7867",
+      "title": "قانون المالية لسنة 1979",
+      "reason": "annual_finance_text"
+    },
+    {
+      "id": "9096",
+      "title": "قانون المالية لسنة 1967",
+      "reason": "annual_finance_text"
+    },
+    {
+      "id": "9097",
+      "title": "قانون المالية لسنة 1970",
+      "reason": "annual_finance_text"
+    },
+    {
+      "id": "9273",
+      "title": "قانون المالية لسنة 2026",
+      "reason": "corrupt_finance_record"
+    },
+    {
+      "id": "7077",
+      "title": "قانون المالية لسنة 1990",
+      "reason": "annual_finance_text"
+    },
+    {
+      "id": "7680",
+      "title": "قانون المالية لسنة 1980",
+      "reason": "annual_finance_text"
+    }
+  ],
+  "judicialDeleted": [
+    {
+      "id": "judicial:3525",
+      "title": "التقرير السنوي لمحكمة النقض 2012"
+    },
+    {
+      "id": "judicial:3527",
+      "title": "التقرير السنوي لمحكمة النقض 2014"
+    },
+    {
+      "id": "judicial:3528",
+      "title": "التقرير السنوي لمحكمة النقض 2015"
+    },
+    {
+      "id": "judicial:3529",
+      "title": "التقرير السنوي لمحكمة النقض 2016"
+    },
+    {
+      "id": "judicial:3531",
+      "title": "التقرير السنوي لمحكمة النقض 2017"
+    },
+    {
+      "id": "judicial:3535",
+      "title": "التقرير السنوي لمحكمة النقض 2019"
+    }
+  ],
+  "publishedDatabase": {
+    "documents": 41841,
+    "removedJudicialReports": 6,
+    "remainingTargetReports": 0,
+    "remainingTargetSearchRows": 0,
+    "integrity": "ok"
+  }
+}
