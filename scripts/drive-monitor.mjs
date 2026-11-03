@@ -160,3 +160,4 @@ if (!hadBaseline) {
     : '\nلا توجد ملفات جديدة أو معدّلة أو محذوفة منذ الفحص السابق.';
   await summarize(`## فحص أرشيف Drive — ${date}\n- ملفات PDF الحالية: ${current.size}\n- جديدة: ${added.length}؛ معدّلة: ${changed.length}؛ أزيلت: ${removed.length}\n- هذه مرحلة رصد فقط: لا تنزيل، ولا OCR، ولا تعديل في Drive أو نشر للمكتبة.${table}`);
 }
+
