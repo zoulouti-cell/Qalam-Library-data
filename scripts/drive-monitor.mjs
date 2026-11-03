@@ -18,7 +18,7 @@ async function summarize(markdown) {
 
 if (missing.length) {
   await summarize(`## فحص أرشيف Drive\nلم يبدأ الفحص؛ أضف أسرار GitHub التالية لتفعيله: ${missing.map((x) => `\`${x}\``).join('، ')}. لم يُجر أي اتصال بـDrive.`);
-  process.exit(0);
+  process.exit(1);
 }
 
 async function fetchJson(url, options = {}, attempts = 5) {
