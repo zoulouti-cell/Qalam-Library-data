@@ -1,0 +1,46 @@
+name: Daily Google Drive monitor
+
+on:
+  schedule:
+    - cron: "17 2 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: qalam-library-drive-monitor
+  cancel-in-progress: false
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out the data repository
+        uses: actions/checkout@v4
+        with:
+          lfs: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Scan the library Drive folder
+        run: node scripts/drive-monitor.mjs
+        env:
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+          DRIVE_ROOT_FOLDER_ID: "1-Bcn4VPhTjoW-z6ZERbd_mGMEy1KZ1-K"
+
+      - name: Save the scan baseline
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if test -f state/drive-sync.json; then git add state/drive-sync.json; fi
+          if git diff --cached --quiet; then
+            echo "No baseline changes to save."
+            exit 0
+          fi
+          git commit -m "Update Drive monitoring baseline"
+          git push
