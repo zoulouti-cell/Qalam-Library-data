@@ -6,13 +6,13 @@ const ROOT_ID = process.env.DRIVE_JUDICIAL_FOLDER_ID?.trim();
 const SA_JSON = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
 const API = process.env.JURIS_CASSATION_API || 'https://huquqai.ma/api/juriscassation';
 const PAGE_SIZE = 100;
-const CONCURRENCY = 5;
+const CONCURRENCY = 2;
 
 function assertConfig() {
   if (!ROOT_ID || !SA_JSON) throw new Error('أضف DRIVE_JUDICIAL_FOLDER_ID و GOOGLE_SERVICE_ACCOUNT_JSON إلى أسرار Actions.');
 }
 
-async function getJson(url, options = {}, retries = 6) {
+async function getJson(url, options = {}, retries = 10) {
   let last;
   for (let i = 0; i < retries; i++) {
     try {
@@ -30,7 +30,7 @@ async function getJson(url, options = {}, retries = 6) {
       last = error;
       if (i === retries - 1) break;
     }
-    await new Promise(resolve => setTimeout(resolve, Math.min(20_000, 700 * (2 ** i))));
+    await new Promise(resolve => setTimeout(resolve, Math.min(30_000, 2_000 * (2 ** i))));
   }
   throw last || new Error('تعذر الاتصال بالمصدر.');
 }
