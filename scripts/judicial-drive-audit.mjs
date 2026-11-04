@@ -114,9 +114,9 @@ async function getSourceDecisions() {
   await Promise.all(workers);
   if (failed.length) throw new Error(`تعذر جلب ${failed.length} صفحة من أصل ${pages}؛ لن يُصدر تقرير ناقص. أمثلة: ${failed.slice(0, 5).map(x => `${x.page}: ${x.error}`).join(' | ')}`);
   const byId = new Map(records.map(record => [String(record.id), record]));
-  const sourceGap = Math.max(0, total - byId.size);
-  if (sourceGap) console.warn(`تحذير المصدر: الإجمالي المعلن ${total}، لكن الصفحات أعادت ${byId.size} سجلاً فريداً (فارق ${sourceGap}). سيقتصر التدقيق على السجلات المعادة ويُبيّن هذا القيد صراحةً.`);
-  return { total, returned: records.length, unique: byId.size, sourceGap, records: [...byId.values()] };
+  const duplicateRows = Math.max(0, records.length - byId.size);
+  if (duplicateRows) console.warn(`تنبيه المصدر: ${duplicateRows} صفاً مكرراً بين الصفحات؛ عدد المعرفات الفريدة ${byId.size} من ${records.length} صفاً معاداً، والإجمالي المعلن ${total}.`);
+  return { total, returned: records.length, unique: byId.size, duplicateRows, records: [...byId.values()] };
 }
 
 function clean(s) { return String(s ?? '').normalize('NFKC').trim().replace(/\s+/g, ' '); }
@@ -125,12 +125,12 @@ function destination(record) {
   const name = clean(record.court_name);
   const year = Number(String(record.decision_date || '').slice(0, 4));
   if (level === 'cassation' || name === 'محكمة النقض' || name === 'المجلس الأعلى') {
-    if (name === 'المجلس الأعلى' && year > 0 && year < 2012) return { path: 'الاجتهادات القضائية/المجلس الاعلى', confidence: 'مرتفع: تسمية المجلس وسنة القرار' };
+    if (name === 'المجلس الأعلى' && year > 0 && year < 2012) return { path: 'المجلس الاعلى', confidence: 'مرتفع: تسمية المجلس وسنة القرار' };
     if (name === 'المجلس الأعلى' && year === 2011) return { path: '', confidence: 'مراجعة أصل القرار: سنة انتقالية' };
-    return { path: 'الاجتهادات القضائية/محكمة النقض', confidence: name === 'المجلس الأعلى' ? 'مرتفع: مستوى النقض والسنة بعد 2011' : 'مرتفع: اسم محكمة النقض/مستوى النقض' };
+    return { path: 'محكمة النقض', confidence: name === 'المجلس الأعلى' ? 'مرتفع: مستوى النقض والسنة بعد 2011' : 'مرتفع: اسم محكمة النقض/مستوى النقض' };
   }
-  if (name.startsWith('محكمة الاستئناف')) return { path: `الاجتهادات القضائية/محاكم الدرجة الثانية/${name}`, confidence: 'مرتفع: اسم المحكمة في بيانات المصدر' };
-  if (name.startsWith('المحكمة الإدارية') || name.startsWith('المحكمة التجارية')) return { path: `الاجتهادات القضائية/محاكم الدرجة الاولى/${name}`, confidence: 'مرتفع: اسم المحكمة في بيانات المصدر' };
+  if (name.startsWith('محكمة الاستئناف')) return { path: `محاكم الدرجة الثانية/${name}`, confidence: 'مرتفع: اسم المحكمة في بيانات المصدر' };
+  if (name.startsWith('المحكمة الإدارية') || name.startsWith('المحكمة التجارية')) return { path: `محاكم الدرجة الاولى/${name}`, confidence: 'مرتفع: اسم المحكمة في بيانات المصدر' };
   return { path: '', confidence: 'مراجعة بشرية: اسم أو مستوى المحكمة غير محسوم' };
 }
 
@@ -142,7 +142,7 @@ function writeCsv(file, rows, fields) {
 assertConfig();
 console.log('Fetching Court of Cassation source metadata…');
 const [source, token] = await Promise.all([getSourceDecisions(), getGoogleToken()]);
-console.log(`Source: ${source.records.length}/${source.total} records; scanning Drive read-only…`);
+console.log(`Source: ${source.unique} unique IDs from ${source.returned} returned rows (advertised ${source.total}); scanning Drive read-only…`);
 const driveFiles = await scanDrive(token);
 const byId = new Map();
 for (const file of driveFiles) {
@@ -200,7 +200,7 @@ const summary = [
   '# تدقيق القرارات القضائية مقابل Google Drive',
   '',
   `- تاريخ الفحص: ${new Date().toISOString()}`,
-  `- سجلات المصدر الفريدة المفحوصة: ${source.unique} (المعاد من الصفحات: ${source.returned}؛ الإجمالي المعلن: ${source.total}؛ الفارق غير المتاح من المصدر: ${source.sourceGap})`,
+  `- سجلات المصدر الفريدة المفحوصة: ${source.unique} (الصفوف المعادة: ${source.returned}؛ الصفوف المكررة بين الصفحات: ${source.duplicateRows}؛ الإجمالي المعلن: ${source.total})`,
   `- ملفات PDF المفحوصة في شجرة Drive: ${driveFiles.length}`,
   ...Object.entries(totals).map(([status, count]) => `- ${status}: ${count}`),
   '',
