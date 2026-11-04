@@ -114,8 +114,9 @@ async function getSourceDecisions() {
   await Promise.all(workers);
   if (failed.length) throw new Error(`تعذر جلب ${failed.length} صفحة من أصل ${pages}؛ لن يُصدر تقرير ناقص. أمثلة: ${failed.slice(0, 5).map(x => `${x.page}: ${x.error}`).join(' | ')}`);
   const byId = new Map(records.map(record => [String(record.id), record]));
-  if (byId.size !== total) throw new Error(`اكتمل جلب الصفحات لكن السجلات الفريدة ${byId.size} لا تساوي الإجمالي المعلن ${total}؛ أوقف التقرير لتجنب نتيجة ناقصة.`);
-  return { total, records: [...byId.values()] };
+  const sourceGap = Math.max(0, total - byId.size);
+  if (sourceGap) console.warn(`تحذير المصدر: الإجمالي المعلن ${total}، لكن الصفحات أعادت ${byId.size} سجلاً فريداً (فارق ${sourceGap}). سيقتصر التدقيق على السجلات المعادة ويُبيّن هذا القيد صراحةً.`);
+  return { total, returned: records.length, unique: byId.size, sourceGap, records: [...byId.values()] };
 }
 
 function clean(s) { return String(s ?? '').normalize('NFKC').trim().replace(/\s+/g, ' '); }
@@ -199,7 +200,7 @@ const summary = [
   '# تدقيق القرارات القضائية مقابل Google Drive',
   '',
   `- تاريخ الفحص: ${new Date().toISOString()}`,
-  `- سجلات المصدر: ${source.records.length} (الإجمالي المعلن: ${source.total})`,
+  `- سجلات المصدر الفريدة المفحوصة: ${source.unique} (المعاد من الصفحات: ${source.returned}؛ الإجمالي المعلن: ${source.total}؛ الفارق غير المتاح من المصدر: ${source.sourceGap})`,
   `- ملفات PDF المفحوصة في شجرة Drive: ${driveFiles.length}`,
   ...Object.entries(totals).map(([status, count]) => `- ${status}: ${count}`),
   '',
