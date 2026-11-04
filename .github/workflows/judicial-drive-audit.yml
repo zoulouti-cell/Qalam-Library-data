@@ -1,0 +1,44 @@
+name: Audit judicial decisions in Drive
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: qalam-judicial-drive-audit
+  cancel-in-progress: false
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Check out data tools
+        uses: actions/checkout@v4
+        with:
+          lfs: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Compare source decisions with Drive
+        run: node scripts/judicial-drive-audit.mjs
+        env:
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+          DRIVE_JUDICIAL_FOLDER_ID: "1_kaLat_zwNLBj8jUg56j-BJJiQXv4oCc"
+
+      - name: Attach the full audit report
+        uses: actions/upload-artifact@v4
+        with:
+          name: judicial-drive-audit
+          path: |
+            ${{ runner.temp }}/judicial-drive-audit.csv
+            ${{ runner.temp }}/judicial-drive-summary.csv
+            ${{ runner.temp }}/judicial-drive-summary.md
+          if-no-files-found: error
+          retention-days: 14
+
